@@ -11,4 +11,5 @@ urlpatterns = [
     path('worker_report/', views.generate_worker_report, name='workerreport'),
     path('edit_student/',views.edit_student_room,name="edit_student_room"),
     path('pdf/', views.GeneratePDF.as_view(), name="pdf"),
+    path("<str:hall_num>", views.get_hall_num, name="get_hall_num"),
 ]

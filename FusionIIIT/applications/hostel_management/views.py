@@ -34,23 +34,11 @@ def hostel_view(request, context={}):
             all_hall - stores all the hall of residence
             all_notice - stores all notices of hostels (latest first)
     """
-    hall_1_student = Student.objects.filter(hall_no=1)[:10]
-    hall_3_student = Student.objects.filter(hall_no=3)[:10]
-    hall_4_student = Student.objects.filter(hall_no=4)[:10]
+    
     all_hall = Hall.objects.all()
-    # halls_student = {}
-    # for hall in all_hall:
-    #     halls_student[hall.hall_id] = Student.objects.filter(hall_no=int(hall.hall_id[4]))[:10]
-
     all_notice = HostelNoticeBoard.objects.all().order_by("-id")
 
     Staff_obj = Staff.objects.all()
-    hall1 = Hall.objects.get(hall_id='hall1')
-    hall3=Hall.objects.get(hall_id='hall3')
-    hall4=Hall.objects.get(hall_id='hall4')
-    hall1_staff = StaffSchedule.objects.filter(hall=hall1)
-    hall3_staff = StaffSchedule.objects.filter(hall=hall3)
-    hall4_staff = StaffSchedule.objects.filter(hall=hall4)
     hall_caretaker = HallCaretaker.objects.all()
 
     hall_student=""
@@ -70,7 +58,22 @@ def hostel_view(request, context={}):
 
         get_hall_num=re.findall('[0-9]+',str(get_hall.hall_id))
         hall_student=Student.objects.filter(hall_no=int(str(get_hall_num[0])))
-        current_hall='hall'+str(get_hall_num[0])
+        current_hall='Hall-'+str(get_hall_num[0])
+
+    if request.session.get('HM_current_hall'):
+        temp=re.findall('[0-9]+',str(request.session.get('HM_current_hall')))
+        current_hall_students=Student.objects.filter(hall_no=int(str(temp[0])))[:10]
+        hall_for_staff=Hall.objects.get(hall_id=str(request.session.get('HM_current_hall')))
+        current_hall_staff=StaffSchedule.objects.filter(hall=hall_for_staff)
+        current_hall_num="Hall-"+str(temp[0])
+        # current_hall_num_dig="hall"+str(temp[0])
+    else:
+        current_hall_students=Student.objects.filter(hall_no=1)[:10]
+        current_hall_num="Hall-1"
+        # current_hall_num_dig="hall1"
+        hall_for_staff=Hall.objects.get(hall_id="hall1")
+        current_hall_staff=StaffSchedule.objects.filter(hall=hall_for_staff)
+
 
 
     hall_caretaker_user=[]
@@ -80,21 +83,18 @@ def hostel_view(request, context={}):
     worker_report = WorkerReport.objects.all()
 
     context = {
-        'hall_1_student': hall_1_student,
-        'hall_3_student': hall_3_student,
-        'hall_4_student': hall_4_student,
         'all_hall': all_hall,
         'all_notice': all_notice,
         'staff':Staff_obj,
-        'hall1_staff' : hall1_staff,
-        'hall3_staff' : hall3_staff,
-        'hall4_staff' : hall4_staff,
         'hall_caretaker' : hall_caretaker_user,
         'room_avail' : get_avail_room,
         'hall_student':hall_student,
         'worker_report': worker_report,
         # 'halls_student': halls_student,
         'current_hall' : current_hall,
+        'current_hall_students': current_hall_students,
+        'current_hall_num': current_hall_num,
+        'current_hall_staff':current_hall_staff,
         **context
     }
 
@@ -251,4 +251,9 @@ class GeneratePDF(View):
             response['Content-Disposition'] = content
             return response
         return HttpResponse("Not found")
+
+
+def get_hall_num(request,hall_num):
+    request.session['HM_current_hall']=hall_num
+    return HttpResponseRedirect(reverse("hostelmanagement:hostel_view"))
 

@@ -1,0 +1,55 @@
+{% block alloted_hostel_room %}
+<div class="ui secondary menu">
+
+
+
+  <a class="item active" data-tab="hall_students">
+    {{current_hall_num}} Students
+  </a>
+  
+  {% if user in hall_caretaker%}
+    <a class="item" data-tab="add_student">
+        Edit Student
+    </a>
+  {% endif %}
+
+    <div class="item">
+      <div class="ui simple dropdown item">
+        Hall No. <i class="dropdown icon"></i>
+        <div class="menu">
+        {% for i in all_hall%}
+            <a class="item" href="{% url 'hostelmanagement:get_hall_num' i.hall_id %}">{{i.hall_id}}</a>
+        {% endfor %}
+        </div>
+    </div>
+    </div>
+
+</div>
+
+
+
+<div class="ui active tab" data-tab="hall_students" >
+    <div class="textLoader" style="max-height: 64vh; overflow-y: auto; overflow-x: hidden;">
+        {% block hall_students %}
+            {% include 'hostelmanagement/hall_students.html' %}
+        {% endblock %}
+    </div>
+</div>
+
+
+
+
+ <div class="ui tab" data-tab="add_student">
+    <div class="ui vertical segment">
+        {% block add_student %}
+            {% include 'hostelmanagement/add_student.html' %}
+        {% endblock %}
+    </div>
+</div> 
+
+<br>
+<br>
+
+<div class="ui divider"></div>
+
+{% endblock %}

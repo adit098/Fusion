@@ -1,5 +1,4 @@
-{% block hall4 %}
-{% comment %} <table class="ui fixed sortable celled table"> {% endcomment %}
+{% block hall_staffs %}
 <table class="ui fixed sortable table">
     <thead>
     <tr>
@@ -9,14 +8,15 @@
         <th class="three wide">Start Time</th>
         <th class="three wide">End Time</th>
         {% if user in hall_caretaker%}
-            {% ifequal current_hall "hall4" %}
+            {% ifequal current_hall current_hall_num %}
                 <th class="two wide">Delete</th>
             {% endifequal %}
         {% endif %}
     </tr>
     </thead>
     <tbody>
-    {% for staff in hall4_staff %}
+    
+    {% for staff in current_hall_staff %}
     <tr>
         <td>
             {{ staff.staff_id.id.user.first_name }} {{ staff.staff_id.id.user.last_name }}
@@ -38,7 +38,7 @@
             {{ staff.end_time }}
         </td>
         {% if user in hall_caretaker%}
-            {% ifequal current_hall "hall4" %}
+            {% ifequal current_hall current_hall_num %}
                 <td>
                     <form method="post"  action="{% url 'hostelmanagement:staff_delete_schedule' %}" class="ui form" role="form">
                     {% csrf_token %}
